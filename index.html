@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rute GPP — Asisten SPV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f6f8;--ink:#17233b;--mute:#58657b;--blue:#234fe5;--line:#e3e7ef;--orange:#a3420e}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px 'DM Sans',system-ui,sans-serif}button,select{font:inherit}button,select,summary{cursor:pointer}button:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #758cff;outline-offset:3px}
+header{background:white;border-bottom:1px solid var(--line)}.top,main{max-width:1200px;margin:auto;padding-inline:24px}.top{min-height:74px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-family:Manrope,sans-serif}.logo{display:grid;place-items:center;background:var(--blue);color:white;border-radius:12px;width:38px;height:38px;font-size:23px}.tag{border-radius:30px;background:#edf1ff;color:#2442a6;padding:6px 11px;font-size:12px;font-weight:700}
+main{padding-block:32px 38px}.hero{background:linear-gradient(110deg,#172b5d,#2249b6);border-radius:22px;color:white;padding:28px 30px;display:flex;justify-content:space-between;align-items:end;gap:20px}.eyebrow{font-size:12px;letter-spacing:.1em;font-weight:800;color:#c4d3ff;text-transform:uppercase}h1,h2,h3{font-family:Manrope,sans-serif;margin:0}h1{font-size:clamp(28px,4vw,45px);letter-spacing:-.05em;margin:6px 0 8px}.hero p{margin:0;color:#e0e8ff}.button{background:var(--blue);border:0;color:white;font-weight:700;padding:11px 15px;border-radius:9px;white-space:nowrap}.hero .button{background:white;color:#1d3d9c}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:18px 0}.card,.panel{background:white;border:1px solid var(--line);border-radius:16px}.card{padding:16px 19px}.card span,small,.muted{color:var(--mute)}.card strong{display:block;font:800 27px Manrope,sans-serif;margin-top:4px}.warn{color:var(--orange)}.grid{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;align-items:start}.panel{padding:18px}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}h2{font-size:20px;letter-spacing:-.035em}select{background:white;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:7px}.map{position:relative;height:310px;background:#ebefe9;border-radius:12px;overflow:hidden;isolation:isolate}.map canvas{width:100%;height:100%;display:block}.pin{position:absolute;transform:translate(-50%,-50%);border:2px solid white;border-radius:50%;width:34px;height:34px;background:var(--blue);color:white;font-size:12px;font-weight:800;box-shadow:0 2px 6px #1a2b5240}.pin.attention{background:var(--orange)}.pin[aria-pressed=true]{outline:3px solid #172b5d;outline-offset:2px}.map-label{position:absolute;bottom:10px;left:10px;background:white;padding:5px 8px;border-radius:6px;font-size:11px;color:var(--mute)}.summary{margin-top:14px;background:#f1f4ff;padding:13px;border-radius:10px}.summary p{margin:4px 0 0}.row{width:100%;display:flex;gap:11px;align-items:center;text-align:left;color:var(--ink);background:white;border:0;border-bottom:1px solid var(--line);padding:11px 5px}.row:hover,.row[aria-pressed=true]{background:#f3f6ff}.row b,.row small{display:block}.ordinal{width:29px;height:29px;border-radius:8px;background:#ebefff;color:#2747b2;display:grid;place-items:center;font-weight:800;flex:none}.badge{margin-left:auto;background:#fff1df;color:#8f370f;padding:4px 7px;border-radius:7px;font-size:11px;font-weight:700;text-align:center}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.secondary{background:white;border:1px solid var(--line);border-radius:9px;padding:9px 11px;color:#2543a1;font-weight:700}.feedback{font-size:13px;margin:10px 0 0;color:#324779}.feedback:empty{display:none}details{margin-top:10px}summary{font-weight:700;color:#2543a1}.products{padding-left:20px;margin-bottom:0}.empty{color:var(--mute)}footer{margin-top:18px;color:var(--mute);font-size:12px}
+@media(max-width:750px){.grid{grid-template-columns:1fr}.map{height:280px}.hero{align-items:start;flex-direction:column;padding:21px}.stats{gap:7px}.card{padding:10px}.card span{font-size:12px}.card strong{font-size:21px}.top,main{padding-inline:14px}main{padding-top:18px}}
+</style>
+</head>
+<body>
+<header><div class="top"><div class="brand"><span class="logo" aria-hidden="true">↗</span> Rute GPP</div><span class="tag">Mode demo</span></div></header>
+<main>
+<section class="hero" aria-labelledby="title"><div><div class="eyebrow">Asisten supervisor sales</div><h1 id="title">Rencana kunjungan</h1><p>Cek urutan mampir dan toko yang perlu ditindaklanjuti.</p></div><button class="button" id="optimize">Usulkan rute</button></section>
+<section class="stats" aria-label="Ringkasan kunjungan">
+<div class="card"><span>Toko dijadwalkan</span><strong id="count"></strong></div>
+<div class="card"><span>Tanpa order ≥ 3 bulan</span><strong class="warn" id="stale"></strong></div>
+<div class="card"><span>Jarak simulasi</span><strong id="distance"></strong></div>
+</section>
+<div class="grid">
+<section class="panel"><div class="panel-head"><h2>Peta toko</h2><label>Radius <select id="radius"><option value="2">2 km</option><option value="5" selected>5 km</option></select></label></div>
+<div class="map" id="map"><canvas id="drawing" aria-hidden="true"></canvas><span class="map-label">Skema lokasi · Gudang GPP sebagai titik awal</span></div>
+<div class="summary" id="profile" aria-live="polite"></div></section>
+<section class="panel"><div class="panel-head"><h2>Daftar kunjungan</h2><span class="tag" id="mode">Rute awal</span></div><div id="route" aria-label="Urutan toko"></div>
+<p class="feedback" id="route-feedback" role="status"></p>
+<div class="toolbar"><button class="secondary" id="upload">Unggah daftar CSV</button><button class="secondary" id="download">Unduh contoh</button><button class="secondary" id="reset" hidden>Pakai rute awal</button></div>
+<input type="file" id="file" accept=".csv,text/csv" hidden><p class="feedback" id="file-feedback" role="status"></p>
+<details><summary>Format daftar kunjungan</summary><p class="muted">Pakai kolom `kode`, satu kode toko demo per baris. Unduh contoh untuk melihat kode yang tersedia. Urutan baris menentukan urutan awal.</p></details>
+</section></div>
+<footer>Data toko fiktif. Jarak mengikuti garis lurus. Waktu simulasi memakai kecepatan 25 km/jam.</footer>
+</main>
+<script>
+const shops = [
+  {code:'T01', name:'Toko Bu Rina', area:'Tebet Timur', x:-1.5,y:0.6, months:4, division:'Minuman', items:[['Teh Melati',850000],['Air Mineral',400000]]},
+  {code:'T02', name:'Toko Pak Dedi', area:'Tebet Barat', x:3.1,y:-1.2, months:0, division:'Minuman', items:[['Air Mineral',1950000],['Teh Melati',800000]]},
+  {code:'T03', name:'Warung Melati', area:'Kebon Baru', x:-0.7,y:-1.2, months:0, division:'Makanan', items:[['Biskuit Cokelat',740000],['Wafer Vanila',480000]]},
+  {code:'T04', name:'Toko Sumber Rezeki', area:'Bukit Duri', x:1.4,y:0.7, months:3, division:'Makanan', items:[['Wafer Vanila',760000],['Biskuit Cokelat',560000]]},
+  {code:'T05', name:'Warung Barokah', area:'Manggarai', x:-2.7,y:-2.0, months:0, division:'Minuman', items:[['Air Mineral',650000],['Teh Melati',260000]]}
+];
+const byId = id => document.getElementById(id);
+const rupiah = new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0});
+const number = new Intl.NumberFormat('id-ID',{maximumFractionDigits:1});
+const depot = {x:0,y:0};
+const distance = (a,b) => Math.hypot(a.x-b.x,a.y-b.y);
+const legs = route => route.map((shop,index)=>distance(route[index-1] || depot,shop));
+const total = route => legs(route).reduce((sum,leg)=>sum+leg,0);
+const km = value => number.format(value)+' km';
+let initial = [...shops], current = [...initial], selected = shops[0], suggested = false;
+
+function shortestRoute(remaining, prefix = [], best = {route:initial, length:total(initial)}) {
+  if (!remaining.length) {
+    const length = total(prefix);
+    if (length < best.length) {
+      best.route = prefix;
+      best.length = length;
+    }
+    return best.route;
+  }
+  remaining.forEach((shop,index) => {
+    shortestRoute(remaining.filter((_,position)=>index!==position),[...prefix,shop],best);
+  });
+  return best.route;
+}
+
+function renderMap(){
+  const map = byId('map'), canvas = byId('drawing'), ctx = canvas.getContext('2d');
+  const {width,height} = map.getBoundingClientRect();
+  const scale = Math.min(width,height)/10.8;
+  const ratio = window.devicePixelRatio || 1;
+  canvas.width = Math.round(width*ratio);
+  canvas.height = Math.round(height*ratio);
+  ctx.scale(ratio,ratio);
+  const point = shop => [width/2+shop.x*scale,height/2+shop.y*scale];
+  const radius = Number(byId('radius').value);
+  const visible = shops.filter(shop=>distance(depot,shop)<=radius);
+  map.querySelectorAll('.pin').forEach(pin=>pin.remove());
+  ctx.fillStyle='#e0ead9';
+  ctx.fillRect(width*.09,height*.13,width*.25,height*.30);
+  ctx.fillRect(width*.68,height*.62,width*.23,height*.24);
+  function line(points,color,lineWidth){
+    ctx.beginPath();
+    points.forEach(([x,y],i)=>i ? ctx.lineTo(x,y) : ctx.moveTo(x,y));
+    ctx.strokeStyle=color;
+    ctx.lineWidth=lineWidth;
+    ctx.stroke();
+  }
+  for(let i=-3;i<13;i++){
+    const x = width*i/9;
+    line([[x,0],[x+38,height]],'#fff',3);
+  }
+  for(let i=0;i<8;i++){
+    const y = height*i/7;
+    line([[0,y],[width,y-30]],'#fff',3);
+  }
+  line([[0,height*.72],[width*.35,height*.61],[width*.63,height*.41],[width,height*.33]],'#fff',10);
+  line([[width*.3,0],[width*.46,height*.34],[width*.54,height*.72],[width*.77,height]],'#c4dfe7',9);
+  ctx.beginPath();
+  ctx.arc(...point(depot),radius*scale,0,Math.PI*2);
+  ctx.fillStyle='#315bf312';
+  ctx.fill();
+  ctx.strokeStyle='#506dde';
+  ctx.setLineDash([5,5]);
+  ctx.lineWidth=1.4;
+  ctx.stroke();
+  ctx.setLineDash([]);
+  current.forEach((shop,index)=>{
+    const previous = current[index-1] || depot;
+    if(visible.includes(shop) && (previous===depot || visible.includes(previous))){
+      line([point(previous),point(shop)],'#4765dc',2.5);
+    }
+  });
+  ctx.beginPath();
+  ctx.arc(...point(depot),5,0,Math.PI*2);
+  ctx.fillStyle='#172b5d';
+  ctx.fill();
+  visible.forEach(shop=>{
+    const pin = document.createElement('button');
+    const position = current.indexOf(shop);
+    pin.className='pin'+(shop.months>=3?' attention':'');
+    const [x,y]=point(shop);
+    pin.style.left=x+'px';
+    pin.style.top=y+'px';
+    pin.textContent=position>=0?position+1:'•';
+    pin.setAttribute('aria-label',shop.name);
+    pin.setAttribute('aria-pressed',shop===selected);
+    pin.onclick=()=>selectShop(shop,'pin');
+    map.append(pin);
+  });
+}
+
+function renderProfile(){
+  const profile = byId('profile');
+  if(!selected){
+    profile.textContent='Pilih toko untuk melihat riwayat pesan.';
+    return;
+  }
+  const order = selected.months ? 'Terakhir pesan '+selected.months+' bulan lalu. Tanyakan apakah toko perlu pesan ulang.' : 'Sudah pesan bulan ini. Cek kebutuhan saat kunjungan.';
+  const sales = selected.items.reduce((sum,item)=>sum+item[1],0);
+  profile.innerHTML = '<h3>'+selected.name+'</h3><p class="muted">'+selected.area+' · '+selected.code+'</p><p>'+order+'</p><details><summary>'+selected.division+' · rerata omzet '+rupiah.format(sales)+'/bulan</summary><ul class="products">'+selected.items.map(([name,value])=>'<li>'+name+' · '+rupiah.format(value)+'/bulan</li>').join('')+'</ul></details>';
+}
+
+function selectShop(shop, source){
+  selected=shop;
+  renderProfile();
+  byId('map').querySelectorAll('.pin').forEach(pin=>pin.setAttribute('aria-pressed',pin.getAttribute('aria-label')===shop.name));
+  byId('route').querySelectorAll('.row').forEach(row=>row.setAttribute('aria-pressed',row.dataset.code===shop.code));
+  if(source==='route' && distance(depot,shop)>Number(byId('radius').value)){
+    byId('radius').value='5';
+    renderMap();
+  }
+}
+
+function render(){
+  byId('count').textContent=current.length;
+  byId('stale').textContent=current.filter(shop=>shop.months>=3).length;
+  byId('distance').textContent=km(total(current));
+  byId('reset').hidden=!suggested;
+  byId('mode').textContent=suggested?'Rute usulan':'Rute awal';
+  const segments=legs(current);
+  const rows=current.map((shop,index)=>{
+    const row=document.createElement('button');
+    row.className='row';
+    row.dataset.code=shop.code;
+    row.setAttribute('aria-pressed',shop===selected);
+    row.innerHTML='<span class="ordinal">'+(index+1)+'</span><span><b>'+shop.name+'</b><small>'+shop.area+' · '+km(segments[index])+' · ~'+Math.round(segments[index]/25*60)+' mnt</small></span>'+(shop.months>=3?'<span class="badge">Perlu follow-up</span>':'');
+    row.onclick=()=>selectShop(shop,'route');
+    return row;
+  });
+  byId('route').replaceChildren(...rows);
+  renderMap();
+  renderProfile();
+}
+
+byId('radius').onchange=renderMap;
+byId('optimize').onclick=()=>{
+  current=shortestRoute(initial);
+  suggested=true;
+  const saving=total(initial)-total(current);
+  byId('route-feedback').textContent=saving>=0.05?'Rute usulan lebih pendek '+km(saving)+' dalam simulasi.':'Urutan awal sudah memiliki jarak simulasi terpendek.';
+  render();
+};
+byId('reset').onclick=()=>{
+  current=[...initial];
+  suggested=false;
+  byId('route-feedback').textContent='Rute awal ditampilkan.';
+  render();
+  byId('optimize').focus();
+};
+byId('download').onclick=()=>{
+  const url=URL.createObjectURL(new Blob(['kode\n'+shops.map(shop=>shop.code).join('\n')+'\n'],{type:'text/csv;charset=utf-8'}));
+  const link=document.createElement('a');
+  link.href=url;
+  link.download='contoh-kunjungan-gpp.csv';
+  link.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+};
+byId('upload').onclick=()=>byId('file').click();
+byId('file').onchange=async event=>{
+  const file=event.target.files[0];
+  event.target.value='';
+  if(!file) return;
+  const feedback=byId('file-feedback');
+  try{
+    if(file.size>65536) throw new Error('Gunakan CSV sampai 64 KB.');
+    const lines=(await file.text()).trim().split(/\r?\n/).map(line=>line.trim().replace(/^"([^"]*)"$/,'$1')).filter(Boolean);
+    if(lines.shift()?.toLowerCase()!=='kode' || !lines.length) throw new Error('Pakai kolom kode dan isi minimal satu toko. Lihat file contoh.');
+    const route=lines.map(code=>shops.find(shop=>shop.code===code.toUpperCase()));
+    if(route.some(shop=>!shop)) throw new Error('Ada kode toko yang tidak dikenal. Pakai kode dari file contoh.');
+    if(new Set(route).size!==route.length) throw new Error('Tulis tiap kode toko sekali saja.');
+    initial=route;
+    current=[...initial];
+    selected=current[0];
+    suggested=false;
+    byId('route-feedback').textContent='';
+    feedback.textContent=current.length+' toko berhasil dimuat.';
+    render();
+  }catch(error){
+    feedback.textContent=error.message;
+  }
+};
+new ResizeObserver(renderMap).observe(byId('map'));
+render();
+</script>
+</body>
+</html>
