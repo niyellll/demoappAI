@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demo CS GPP</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#edf3f0;color:#14322a;font:15px/1.5 system-ui,sans-serif}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid #399c7d;outline-offset:2px}.layout{max-width:1030px;margin:0 auto;padding:40px 20px;display:grid;grid-template-columns:1fr 1.25fr;gap:32px;align-items:start}.intro{padding:23px 0}h1{font-size:clamp(35px,6vw,64px);letter-spacing:-.07em;line-height:1;margin:12px 0 16px}.intro p{color:#425e54;max-width:42ch}.examples{display:flex;flex-wrap:wrap;gap:8px;margin-top:19px}.examples button,#reset{border:1px solid #bacfc5;border-radius:10px;background:white;color:#194837;padding:8px 10px;font-weight:650}.examples button:hover,#reset:hover{background:#e4f3eb}.chat{background:white;border:1px solid #bed4c9;border-radius:19px;overflow:hidden;box-shadow:0 18px 50px #123d2920}.chat header{display:flex;align-items:center;gap:11px;padding:14px 16px;background:#12513e;color:white}.avatar{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#d7f3de;color:#174937;font-weight:800}.chat header small{display:block;color:#d8f1e3}#reset{margin-left:auto;font-size:12px}.messages{height:clamp(280px,46vh,490px);overflow:auto;padding:15px;display:flex;flex-direction:column;gap:10px;background:#f1f6f1}.message{max-width:86%;padding:9px 12px;border-radius:13px;background:white;align-self:flex-start;border:1px solid #dce7de;white-space:pre-wrap;overflow-wrap:anywhere}.message.customer{align-self:flex-end;background:#d7f2d8;border-color:#cbe6cb}.author{display:block;font-size:11px;color:#3c6657;font-weight:750}.composer{display:flex;gap:8px;padding:11px;background:white}.composer input{border:1px solid #bfd3c8;border-radius:10px;padding:10px;min-width:0;flex:1}.composer button{border:0;border-radius:10px;background:#12513e;color:white;padding:10px 14px;font-weight:700}.composer button:hover{background:#1a6a51}@media(max-width:720px){.layout{grid-template-columns:1fr;padding:16px;gap:12px}.intro{padding:4px 0}.examples{margin-top:11px}.messages{height:36vh}}
+</style>
+</head>
+<body><main class="layout">
+<section class="intro"><h1>Demo CS GPP</h1><p>Coba kirim pesan seperti pelanggan. Demo ini memakai contoh jawaban dan belum terhubung ke WhatsApp atau admin GPP.</p>
+<div class="examples" aria-label="Contoh pertanyaan"><button type="button">Cara pesan barang?</button><button type="button">Cek status pesanan</button><button type="button">Barang yang datang rusak</button><button type="button">Bicara dengan admin</button></div>
+</section>
+<section class="chat" aria-label="Simulasi percakapan">
+<header><span class="avatar" aria-hidden="true">GPP</span><div><strong>Customer Service GPP</strong><small id="state">Balasan otomatis</small></div><button id="reset" type="button">Ulangi</button></header>
+<div id="messages" class="messages" role="log" aria-label="Percakapan"></div>
+<form class="composer"><input id="message" placeholder="Tulis pesan…" aria-label="Tulis pesan" maxlength="500" required><button>Kirim</button></form>
+</section>
+</main><script>
+const log=document.querySelector('#messages');
+const state=document.querySelector('#state');
+const input=document.querySelector('#message');
+let step='start';
+function add(author,text){
+ const bubble=document.createElement('div');
+ bubble.className='message'+(author==='Anda'?' customer':'');
+ const label=document.createElement('span');
+ label.className='author';
+ label.textContent=author;
+ bubble.append(label,text);
+ log.append(bubble);
+ log.scrollTop=log.scrollHeight;
+}
+function reset(){
+ step='start';
+ state.textContent='Balasan otomatis';
+ log.replaceChildren();
+ input.value='';
+ add('CS GPP','Halo, selamat datang di CS GPP. Ada yang bisa kami bantu?');
+}
+function handoff(reason){
+ step='admin';
+ state.textContent='Menunggu admin · simulasi';
+ return reason+' Di demo ini, percakapan ditandai untuk diteruskan ke admin.';
+}
+function answer(text){
+ const message=text.toLowerCase();
+ if(step==='admin') return 'Percakapan ini sedang menunggu admin dalam simulasi. Tekan Ulangi untuk mencoba pertanyaan lain.';
+ if(/\b(admin|operator|petugas|manusia)\b/.test(message)) return handoff('Baik, permintaan bicara dengan admin sudah dicatat.');
+ if(/rusak|pecah|komplain|keluhan|kurang barang|barang salah/.test(message)){
+  step='complaint';
+  return 'Mohon maaf atas kendalanya. Untuk demo, tulis nomor pesanan contoh dan singkatnya apa yang terjadi. Misalnya, GPP-123, satu barang rusak.';
+ }
+ if(step==='complaint') return handoff('Terima kasih. Informasi keluhan sudah dicatat di percakapan ini.');
+ if(step==='tracking') return handoff('Terima kasih. Status pesanan perlu dicek oleh tim GPP.');
+ if(/status|resi|sampai mana|belum sampai|lacak/.test(message)){
+  step='tracking';
+  return 'Boleh tulis nomor pesanan contoh, misalnya GPP-123?';
+ }
+ if(/pesan|order|beli|stok|harga|katalog/.test(message)){
+  step='order';
+  return 'Untuk mulai pemesanan, sebutkan nama produk dan jumlah yang dibutuhkan. Tim GPP bisa membantu konfirmasi harga dan stok.';
+ }
+ if(step==='order') return handoff('Terima kasih. Detail produk sudah dicatat untuk dicek.');
+ if(/^(hai|halo|pagi|siang|sore|malam|assalamualaikum)[!. ]*$/.test(message)) return 'Halo! Mau tanya cara pesan, cek status pesanan, atau menyampaikan keluhan?';
+ if(/terima kasih|makasih/.test(message)) return 'Sama-sama. Senang bisa membantu.';
+ return handoff('Pertanyaan ini perlu dibantu oleh tim GPP.');
+}
+function send(text){
+ const clean=text.trim();
+ if(!clean)return;
+ add('Anda',clean);
+ add('CS GPP',answer(clean));
+ input.value='';
+}
+document.querySelector('form').onsubmit=event=>{event.preventDefault();send(input.value);};
+document.querySelectorAll('.examples button').forEach(button=>button.onclick=()=>{
+ if(step!=='start') reset();
+ send(button.textContent);
+});
+document.querySelector('#reset').onclick=reset;
+reset();
+</script></body></html>
