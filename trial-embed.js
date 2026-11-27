@@ -11,6 +11,18 @@ async function renderTrial() {
   const parser = source.querySelector('script[integrity]');
   if (!workspace || !css || !parser) throw new Error('Komponen trial belum lengkap.');
 
+  if (!globalThis.XLSX) {
+    await new Promise((resolve, reject) => {
+      const library = document.createElement('script');
+      library.src = parser.getAttribute('src');
+      library.integrity = parser.integrity;
+      library.crossOrigin = parser.crossOrigin;
+      library.onload = resolve;
+      library.onerror = reject;
+      document.head.append(library);
+    });
+  }
+
   workspace.classList.add('workspace--embedded');
   const oldHomeLink = workspace.querySelector('.masthead a');
   oldHomeLink.remove();
@@ -35,11 +47,7 @@ async function renderTrial() {
     });
   }
   host.replaceChildren(container);
-  const library = document.createElement('script');
-  library.src = parser.src;
-  library.integrity = parser.integrity;
-  library.crossOrigin = parser.crossOrigin;
-  document.head.append(library);
+
 }
 
 renderTrial().catch(() => {
