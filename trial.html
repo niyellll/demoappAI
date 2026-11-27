@@ -50,13 +50,13 @@
   </section>
   <section class="panel" id="penjualan">
     <h2>Analisis produk dan sebaran toko</h2>
-    <div class="controls">
+    <div class="controls filters">
       <label>Toko <select id="shop"></select></label>
       <label>Divisi <select id="division"></select></label>
       <label>Bulan <select id="month"></select></label>
     </div>
     <p class="status" id="sales-info" role="status"></p>
-    <div class="grid">
+    <div class="grid" id="sales-results" hidden>
       <div class="stack">
         <div class="tile"><h3>Omzet per produk</h3><ul class="chart" id="products"></ul></div>
         <div class="tile"><h3>Rata-rata omzet per bulan tersedia</h3><ul class="chart" id="product-average"></ul></div>
@@ -65,7 +65,7 @@
       </div>
       <div class="tile">
         <h3>Toko aktif per kelurahan</h3>
-        <div class="map" id="coverage-map" role="group" aria-label="Posisi toko aktif" data-empty="Titik toko aktif akan tampil di sini."></div>
+        <div class="map" id="coverage-map" hidden role="group" aria-label="Posisi toko aktif" data-empty="Titik toko aktif akan tampil di sini."></div>
         <p class="note" id="coverage-info" role="status"></p>
         <ul class="chart" id="coverage"></ul>
       </div>
@@ -73,12 +73,16 @@
   </section>
   <section class="panel" id="foto-rak">
     <h2>Foto rak dan referensi SKU</h2>
-    <div class="grid">
+    <div class="grid photo-grid">
       <div class="tile">
-        <div class="controls"><label>Toko <select id="photo-shop"></select></label></div>
-        <label class="photo-file">Foto rak <input type="file" accept="image/*" id="display"></label>
+        <div class="controls filters"><label>Toko <select id="photo-shop"></select></label></div>
+        <div class="photo-picker">
+          <button type="button" class="secondary" id="pick-display">Pilih foto rak</button>
+          <input type="file" accept="image/*" aria-label="Foto rak" id="display" hidden>
+          <span class="note" id="display-name">Belum ada foto</span>
+        </div>
         <div id="display-preview"></div>
-        <p class="note">Centang SKU yang terlihat di rak.</p>
+        <p class="note" id="checklist-note" hidden>Centang SKU yang terlihat di rak.</p>
         <div id="checklist"></div>
         <p class="status" id="missing" role="status"></p>
       </div>

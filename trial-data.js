@@ -126,6 +126,13 @@ export function mountTrial(root) {
   }
   function options(id,values,all=''){
     const select=byId(id), previous=select.value;
+    if(!values.length){
+      const placeholders={schedule:'Belum ada jadwal',shop:'Unggah Master Toko',division:'Unggah Data Penjualan',month:'Belum ada bulan','photo-shop':'Unggah Master Toko'};
+      select.replaceChildren(new Option(placeholders[id]??'Belum ada pilihan',''));
+      select.disabled=true;
+      return;
+    }
+    select.disabled=false;
     select.replaceChildren(...(all?[new Option(all,'')]:[]),...values.map(([value,label])=>new Option(label,value)));
     if([...select.options].some(option=>option.value===previous)) select.value=previous;
   }
@@ -189,6 +196,7 @@ export function mountTrial(root) {
   function chart(id,entries,format){
     const root=byId(id);
     if(!root) return;
+    if(id!=='coverage') root.closest('.tile').hidden=!entries.length;
     const max=Math.max(1,...entries.map(([,value])=>Math.abs(value)));
     root.replaceChildren(...entries.map(([label,value])=>{
       const li=document.createElement('li'),bar=document.createElement('span');
@@ -203,6 +211,7 @@ export function mountTrial(root) {
     const storeMap=shops(), itemMap=items();
     const divisionRows=data.sales.filter(row=>!division||(cell(row.divname)||cell(row.divid))===division);
     const current=divisionRows.filter(row=>monthOf(row.tanggal)===month);
+    byId('sales-results').hidden=!current.length;
     const sales=current.filter(row=>code(row.custid)===shop);
     const prior=divisionRows.filter(row=>monthOf(row.tanggal)<month&&code(row.custid)===shop);
     const observed=new Set(divisionRows.filter(row=>monthOf(row.tanggal)<=month&&code(row.custid)===shop).map(row=>code(row.itemid)));
@@ -241,6 +250,7 @@ export function mountTrial(root) {
     mapped.forEach(row=>{const area=cell(row.village);areas.set(area,(areas.get(area)??0)+1);});
     byId('coverage-info').textContent=current.length?mapped.length+' toko aktif terpetakan · '+(active.size-mapped.length)+' belum punya kelurahan yang cocok.':'Belum ada data penjualan untuk pilihan ini.';
     chart('coverage',[...areas].sort((a,b)=>b[1]-a[1]),String);
+    byId('coverage-map').hidden=!mapped.some(row=>coords(row));
     drawMap('coverage-map',mapped,row=>{byId('coverage-info').textContent=cell(row.custname)+' · '+cell(row.village);});
   }
   function references(){
@@ -248,6 +258,13 @@ export function mountTrial(root) {
     const history=new Map(data.sales.filter(row=>code(row.custid)===shop&&(number(row.qty)>0||(!cell(row.qty)&&number(row.subamount)>0))).map(row=>[code(row.itemid),cell(row.itemname)]));
     const labels=byId('checklist'), images=byId('images');
     labels.replaceChildren();images.replaceChildren();
+    byId('checklist-note').hidden=!history.size;
+    if(!photoUrls.length){
+      const message=document.createElement('p');
+      message.className='note';
+      message.textContent=data.items.length?'Belum ada foto di Master Item.':'Unggah Master Item untuk melihat foto SKU.';
+      images.append(message);
+    }
     function result(){
       const missing=[...history].filter(([id])=>!checked.has(id)).map(([id,name])=>cell(master.get(id)?.itemname)||name||id);
       byId('missing').textContent=!history.size?'Belum ada riwayat yang cocok untuk toko ini.':missing.length?'Belum ditandai terlihat: '+missing.join(', ')+'. Konfirmasi stok di toko.':'Semua SKU dalam riwayat ditandai terlihat.';
@@ -285,11 +302,13 @@ export function mountTrial(root) {
   byId('reset-route').onclick=()=>{optimized=false;route();};
   for(const id of ['shop','division','month'])byId(id).onchange=analysis;
   byId('photo-shop').onchange=()=>{checked.clear();references();};
+  byId('pick-display').onclick=()=>byId('display').click();
   byId('display').onchange=event=>{
     const file=event.target.files[0];
     if(!file||!file.type.startsWith('image/')) return;
     if(displayUrl) URL.revokeObjectURL(displayUrl);
     displayUrl=URL.createObjectURL(file);
+    byId('display-name').textContent=file.name;
     const img=new Image();img.src=displayUrl;img.alt='Foto rak toko';
     byId('display-preview').replaceChildren(img);
   };
