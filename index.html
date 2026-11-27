@@ -48,7 +48,7 @@ main{padding-top:24px;padding-bottom:45px}
 </dialog>
 <main>
 <section class="hero" aria-labelledby="title"><div class="route-art" aria-hidden="true"><i></i></div><div class="hero-content"><div class="eyebrow">Asisten supervisor sales</div><h1 id="title">Rencana kunjungan</h1><p>Cek urutan mampir dan toko yang perlu ditindaklanjuti.</p><button class="button" id="optimize">Usulkan rute <span aria-hidden="true">↗</span></button></div></section>
-<nav class="nav" aria-label="Fitur"><a href="/trial.html">Trial data Excel</a><a href="#toko">Peta toko</a><a href="#kunjungan">Rute kunjungan</a><a href="#foto">Foto rak</a><a href="#produk">Analisis produk</a><a href="#sebaran">Sebaran toko</a></nav>
+<nav class="nav" aria-label="Fitur"><a href="#trial-data">Trial Data GPP</a><a href="#toko">Peta toko</a><a href="#kunjungan">Rute kunjungan</a><a href="#foto">Foto rak</a><a href="#produk">Analisis produk</a><a href="#sebaran">Sebaran toko</a></nav>
 <section class="stats" aria-label="Ringkasan kunjungan">
 <div class="card"><span class="stat-icon" aria-hidden="true">▤</span><span class="stat-label">Toko dijadwalkan</span><strong id="count"></strong></div>
 <div class="card"><span class="stat-icon" aria-hidden="true">!</span><span class="stat-label">Tanpa order ≥ 3 bulan</span><strong class="warn" id="stale"></strong></div>
@@ -81,7 +81,11 @@ main{padding-top:24px;padding-bottom:45px}
 <div class="controls"><label>Divisi <select id="coverage-division"></select></label><label>Bulan <select id="coverage-month"></select></label></div>
 <div class="analysis-grid"><div><canvas id="coverage-map" role="img" aria-label="Skema sebaran toko aktif"></canvas><small>Biru: aktif · abu-abu: belum transaksi bulan ini</small></div><div><p id="coverage-total"></p><figure class="chart" id="coverage-chart"></figure></div></div>
 </section>
+<section id="trial-data" aria-label="Trial Data GPP">
+  <p><a href="/trial.html">Buka Trial Data GPP</a></p>
+</section>
 </main>
+<script type="module" src="/trial-embed.js"></script>
 <script>
 const shops = [
   {code:'T01', name:'Toko Bu Rina', area:'Tebet Timur', x:-1.5,y:0.6, months:4, division:'Minuman', items:[['Teh Melati',850000],['Air Mineral',400000]]},

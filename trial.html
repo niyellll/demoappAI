@@ -7,7 +7,10 @@
   <link rel="icon" href="/icon-192.png">
   <link rel="stylesheet" href="/trial.css">
 <script defer crossorigin="anonymous" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-<script defer src="/trial-data.js"></script></head>
+<script type="module">
+  import { mountTrial } from "/trial-data.js";
+  mountTrial(document);
+</script></head>
 <body>
 <main class="workspace">
   <header class="masthead">
