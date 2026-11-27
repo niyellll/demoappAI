@@ -1,13 +1,91 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Trial Data GPP</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#edf2fa;color:#162747;font:15px/1.55 system-ui,sans-serif}main{max-width:1060px;padding:18px;margin:auto}header,section{padding:20px;margin:0 0 15px;border-radius:16px;background:white;border:1px solid #d9e3f4}header{background:#172e68;color:white}header a{color:#dbe8ff}h1,h2,h3,p{margin:0 0 9px}h1{font-size:clamp(30px,6vw,47px);letter-spacing:-.05em}h2{font-size:22px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.field{background:#f1f5ff;border-radius:10px;padding:12px;min-width:0}.field label{font-weight:700}input,button,select{font:inherit;max-width:100%}input[type=file]{display:block;margin:8px 0}button{cursor:pointer;border:0;background:#234fe5;color:white;border-radius:8px;padding:7px 12px;font-weight:700}select{padding:6px;border:1px solid #bbc9e1;border-radius:7px;background:white}small,.note{color:#52617c}.field p{margin:5px 0;overflow-wrap:anywhere}.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 12px}.chart{list-style:none;margin:0 0 12px;padding:0}.chart li{margin:6px 0}.bar{display:block;height:6px;background:#2855df;border-radius:4px}.map{position:relative;height:245px;background:repeating-linear-gradient(0deg,#e8f1ed 0 23px,#f8fcfa 24px 26px);border:1px solid #dfebe4;border-radius:9px}.map button{position:absolute;transform:translate(-50%,-50%);padding:3px 7px;border-radius:20px}.sku-images{display:flex;flex-wrap:wrap;gap:8px}.sku-images figure{margin:0;padding:6px;background:#f1f5ff;width:126px;border-radius:8px;overflow-wrap:anywhere}.sku-images img{width:100%;height:95px;object-fit:contain}#display-preview img{max-width:100%;max-height:180px}.routes li{margin-bottom:4px}@media(max-width:600px){.grid{grid-template-columns:1fr}main{padding:10px}header,section{padding:14px}}
-</style>
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Trial Data GPP</title>
+  <link rel="icon" href="/icon-192.png">
+  <link rel="stylesheet" href="/trial.css">
 <script defer crossorigin="anonymous" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script defer src="/trial-data.js"></script></head>
-<body><main>
-<header><a href="/">Kembali ke Rute GPP</a><h1>Trial data GPP</h1><p>Unggah Excel atau CSV. Data dibaca di perangkat ini dan tidak disimpan setelah halaman ditutup.</p></header>
-<section><h2>Sumber data</h2><div class="grid" id="imports"></div><p id="matches" role="status"></p></section>
-<section><h2>Call plan dan lokasi toko</h2><div class="controls"><label>Jadwal <select id="schedule"></select></label><button id="optimize">Usulkan rute</button><button id="reset-route">Urutan awal</button></div><p class="note">Jarak antar titik adalah perkiraan garis lurus.</p><p id="route-info"></p><div class="grid"><div><div class="map" id="map" aria-label="Posisi toko berdasarkan koordinat"></div><p id="store-info" role="status"></p></div><ol class="routes" id="route"></ol></div></section>
-<section><h2>Analisis produk dan sebaran toko</h2><div class="controls"><label>Toko <select id="shop"></select></label><label>Divisi <select id="division"></select></label><label>Bulan <select id="month"></select></label></div><p id="sales-info" role="status"></p><div class="grid"><div><h3>Omzet per produk</h3><ul class="chart" id="products"></ul><h3>Rata-rata omzet per bulan tersedia</h3><ul class="chart" id="product-average"></ul><h3>Jumlah invoice per produk</h3><ul class="chart" id="product-invoices"></ul><h3>Produk laris untuk ditawarkan</h3><ul class="chart" id="suggestions"></ul></div><div><h3>Toko aktif per kelurahan</h3><div class="map" id="coverage-map" aria-label="Posisi toko aktif"></div><p id="coverage-info" role="status"></p><ul class="chart" id="coverage"></ul></div></div></section>
-<section><h2>Foto rak dan referensi SKU</h2><p>Unggah Master Item di atas. Foto yang tertanam di kolom FOTO PRODUK ditampilkan bersama SKU.</p><label>Toko <select id="photo-shop"></select></label><label> Foto rak <input type="file" accept="image/*" id="display"></label><div id="display-preview"></div><p>Centang produk yang terlihat untuk membandingkannya dengan riwayat pesanan toko.</p><div id="checklist"></div><p id="missing" role="status"></p><h3>Referensi foto produk</h3><div class="sku-images" id="images"></div></section>
-</main></body></html>
+<body>
+<main class="workspace">
+  <header class="masthead">
+    <a href="/">← Rute GPP</a>
+    <h1>Trial data GPP</h1>
+    <p>Unggah Excel atau CSV untuk menguji data di perangkat ini.</p>
+  </header>
+  <nav class="jump-links" aria-label="Bagian trial">
+    <a href="#sumber">Sumber data</a>
+    <a href="#kunjungan">Call plan</a>
+    <a href="#penjualan">Grafik penjualan</a>
+    <a href="#foto-rak">Foto rak</a>
+  </nav>
+  <section class="panel" id="sumber">
+    <h2>Sumber data</h2>
+    <div class="grid" id="imports"></div>
+    <p class="status" id="matches" role="status"></p>
+  </section>
+  <section class="panel" id="kunjungan">
+    <h2>Call plan dan lokasi toko</h2>
+    <div class="controls">
+      <label>Jadwal <select id="schedule"></select></label>
+      <button id="optimize" type="button">Usulkan rute</button>
+      <button class="secondary" id="reset-route" type="button">Urutan awal</button>
+    </div>
+    <p class="status" id="route-info" role="status"></p>
+    <div class="grid">
+      <div class="stack">
+        <div class="map" id="map" role="group" aria-label="Posisi toko berdasarkan koordinat" data-empty="Titik toko akan tampil di sini."></div>
+        <p class="note" id="store-info" role="status"></p>
+      </div>
+      <div class="tile">
+        <h3>Urutan kunjungan</h3>
+        <ol class="routes" id="route"></ol>
+      </div>
+    </div>
+  </section>
+  <section class="panel" id="penjualan">
+    <h2>Analisis produk dan sebaran toko</h2>
+    <div class="controls">
+      <label>Toko <select id="shop"></select></label>
+      <label>Divisi <select id="division"></select></label>
+      <label>Bulan <select id="month"></select></label>
+    </div>
+    <p class="status" id="sales-info" role="status"></p>
+    <div class="grid">
+      <div class="stack">
+        <div class="tile"><h3>Omzet per produk</h3><ul class="chart" id="products"></ul></div>
+        <div class="tile"><h3>Rata-rata omzet per bulan tersedia</h3><ul class="chart" id="product-average"></ul></div>
+        <div class="tile"><h3>Jumlah invoice per produk</h3><ul class="chart" id="product-invoices"></ul></div>
+        <div class="tile"><h3>Produk laris untuk ditawarkan</h3><ul class="chart" id="suggestions"></ul></div>
+      </div>
+      <div class="tile">
+        <h3>Toko aktif per kelurahan</h3>
+        <div class="map" id="coverage-map" role="group" aria-label="Posisi toko aktif" data-empty="Titik toko aktif akan tampil di sini."></div>
+        <p class="note" id="coverage-info" role="status"></p>
+        <ul class="chart" id="coverage"></ul>
+      </div>
+    </div>
+  </section>
+  <section class="panel" id="foto-rak">
+    <h2>Foto rak dan referensi SKU</h2>
+    <div class="grid">
+      <div class="tile">
+        <div class="controls"><label>Toko <select id="photo-shop"></select></label></div>
+        <label class="photo-file">Foto rak <input type="file" accept="image/*" id="display"></label>
+        <div id="display-preview"></div>
+        <p class="note">Centang SKU yang terlihat di rak.</p>
+        <div id="checklist"></div>
+        <p class="status" id="missing" role="status"></p>
+      </div>
+      <div class="tile">
+        <h3>Referensi foto produk</h3>
+        <p class="note">Foto SKU diambil dari kolom FOTO PRODUK di Master Item.</p>
+        <div class="sku-images" id="images"></div>
+      </div>
+    </div>
+  </section>
+</main>
+</body>
+</html>
