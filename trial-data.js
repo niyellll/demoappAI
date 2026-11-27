@@ -187,7 +187,9 @@ function route(){
   drawMap('map',ordered.map(store),row=>{byId('store-info').textContent=cell(row.custname)+' · '+cell(row.village)+' · '+coords(row).join(', ');});
 }
 function chart(id,entries,format){
-  const root=byId(id), max=Math.max(1,...entries.map(([,value])=>Math.abs(value)));
+  const root=byId(id);
+  if(!root) return;
+  const max=Math.max(1,...entries.map(([,value])=>Math.abs(value)));
   root.replaceChildren(...entries.map(([label,value])=>{
     const li=document.createElement('li'),bar=document.createElement('span');
     li.textContent=label+' · '+format(value);
@@ -222,7 +224,16 @@ function analysis(){
     }
     return [...sums.values()].sort((a,b)=>b[1]-a[1]);
   }
+  const elapsedMonths=new Set(divisionRows.filter(row=>monthOf(row.tanggal)<=month).map(row=>monthOf(row.tanggal))).size;
+  const purchases=new Map();
+  for(const row of sales){
+    const id=code(row.itemid);
+    if(!purchases.has(id)) purchases.set(id,new Set());
+    purchases.get(id).add(cell(row.invoice));
+  }
   chart('products',omzet(sales),value=>rupiah.format(value));
+  chart('product-average',omzet([...prior,...sales]).map(([name,total])=>[name,total/Math.max(1,elapsedMonths)]),value=>rupiah.format(value));
+  chart('product-invoices',omzet(sales).map(([name,,id])=>[name,purchases.get(id).size]),String);
   chart('suggestions',observed.size?omzet(current).filter(row=>row[1]>0).slice(0,10).filter(row=>!observed.has(row[2])):[],value=>rupiah.format(value));
   const active=new Set(current.filter(row=>number(row.qty)>0||(!cell(row.qty)&&number(row.subamount)>0)).map(row=>code(row.custid)));
   const mapped=[...active].map(id=>storeMap.get(id)).filter(row=>cell(row?.village));
